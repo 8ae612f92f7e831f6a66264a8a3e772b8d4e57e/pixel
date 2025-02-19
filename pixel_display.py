@@ -34,6 +34,16 @@ class PixelDisplay:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                elif event.type == pygame.KEYDOWN and self.pixel_map.pixels:
+                    active_pixel = self.pixel_map.pixels[0]
+                    if event.key == pygame.K_LEFT:
+                        self.pixel_map.move_pixel_left(active_pixel)
+                    elif event.key == pygame.K_RIGHT:
+                        self.pixel_map.move_pixel_right(active_pixel)
+                    elif event.key == pygame.K_UP:
+                        self.pixel_map.move_pixel_up(active_pixel)
+                    elif event.key == pygame.K_DOWN:
+                        self.pixel_map.move_pixel_down(active_pixel)
                     
             self.screen.fill((0, 0, 0))
             self.draw_grid()
@@ -44,9 +54,12 @@ class PixelDisplay:
 
 if __name__ == "__main__":
     test_map = Map(20, 15)
-    test_map.add_pixel(Pixel((5, 5)))
-    test_map.add_pixel(Pixel((6, 5)))
-    test_map.add_pixel(Pixel((7, 5)))
+    test_pixel = Pixel((5, 5))
+    test_map.add_pixel(test_pixel)
+    test_pixel_2 = Pixel((5, 6))
+    test_map.add_pixel(test_pixel_2)
+    
+    test_map.move_pixel_right(test_pixel)
     
     display = PixelDisplay(test_map)
     display.run() 
