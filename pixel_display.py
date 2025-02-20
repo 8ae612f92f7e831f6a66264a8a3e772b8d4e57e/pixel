@@ -6,27 +6,40 @@ class PixelDisplay:
         pygame.init()
         self.pixel_map = pixel_map
         self.cell_size = cell_size
-        self.width = pixel_map.width * cell_size
-        self.height = pixel_map.height * cell_size
+        self.width = (pixel_map.width + pixel_map.height) * cell_size * 1.1
+        self.height = (pixel_map.width + pixel_map.height) * cell_size
         self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("Pixel Map")
+        self.offset_x = self.width // 2.4
+        self.offset_y = self.height // 4
         
     def draw_grid(self):
-        for x in range(0, self.width, self.cell_size):
-            pygame.draw.line(self.screen, (0, 100, 100), (x, 0), (x, self.height))
-        for y in range(0, self.height, self.cell_size):
-            pygame.draw.line(self.screen, (0, 100, 100), (0, y), (self.width, y))
+        for x in range(self.pixel_map.width + 1):
+            start_x = (x - 0) * self.cell_size + self.offset_x
+            start_y = (x + 0) * (self.cell_size // 2) + self.offset_y
+            end_x = (x - self.pixel_map.height) * self.cell_size + self.offset_x
+            end_y = (x + self.pixel_map.height) * (self.cell_size // 2) + self.offset_y
+            pygame.draw.line(self.screen, (0, 100, 100), (start_x, start_y), (end_x, end_y))
+
+        for y in range(self.pixel_map.height + 1):
+            start_x = (0 - y) * self.cell_size + self.offset_x
+            start_y = (0 + y) * (self.cell_size // 2) + self.offset_y
+            end_x = (self.pixel_map.width - y) * self.cell_size + self.offset_x
+            end_y = (self.pixel_map.width + y) * (self.cell_size // 2) + self.offset_y
+            pygame.draw.line(self.screen, (0, 100, 100), (start_x, start_y), (end_x, end_y))
     
     def draw_pixels(self):
         for pixel in self.pixel_map.pixels:
             x, y = pixel.position
-            rect = pygame.Rect(
-                x * self.cell_size,
-                y * self.cell_size,
-                self.cell_size,
-                self.cell_size
-            )
-            pygame.draw.rect(self.screen, (255, 128, 0), rect)
+            iso_x = (x - y) * self.cell_size + self.offset_x
+            iso_y = (x + y) * (self.cell_size // 2) + self.offset_y + self.cell_size // 2
+            points = [
+                (iso_x, iso_y - self.cell_size // 2),
+                (iso_x + self.cell_size, iso_y),
+                (iso_x, iso_y + self.cell_size // 2),
+                (iso_x - self.cell_size, iso_y)
+            ]
+            pygame.draw.polygon(self.screen, (255, 128, 0), points)
     
     def run(self):
         running = True
